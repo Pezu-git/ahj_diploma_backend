@@ -41,10 +41,10 @@ app.use(async (ctx) => {
   if (ctx.request.files) {
     const { file } = ctx.request.files;
     if (file) {
-      const type = file.type.split('/')[0];
-      const extension = file.type.split('/')[1];
+      const type = file.file.type.split('/')[0];
+      const extension = file.file.type.split('/')[1];
       const link = await new Promise((resolve, reject) => {
-      const oldPath = file.path;
+      const oldPath = file.file.path;
       const filename = `${uuidv4()}.${extension}`;
       const newPath = path.join(public, filename);
         
