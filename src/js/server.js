@@ -114,7 +114,7 @@ app.use(async (ctx) => {
   const obj = {
     text,
     type,
-    link: `${url}/${link}`,
+    link: '`${url}/${link}`',
     id: uuidv4(),
     dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
   }
