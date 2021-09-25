@@ -88,7 +88,7 @@ app.use(async (ctx) => {
   }
 
   if (media) {
-    data.media.push({
+    data[media].push({
       link: `${url}/${link}`,
       type,
       dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
