@@ -1,7 +1,7 @@
 {
   "name": "ahj-diploma-backend",
   "version": "1.0.0",
-  "description": "**Backend: https://ahjdiploma.herokuapp.com/**",
+  "description": "https://ahjdiploma.herokuapp.com/",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
