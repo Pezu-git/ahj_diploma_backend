@@ -83,17 +83,12 @@ app.use(async (ctx) => {
 
   const { text, type, array, media, init } = ctx.request.query;
 
-  if (init) {
-    ctx.response.body = data;
-  }
+  // if (init) {
+  //   ctx.response.body = data;
+  // }
 
   if (media) {
-    data[media].push({
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    });
-    ctx.response.body = data;
+    ctx.response.body = data[media];
   }
 
   switch (text) {
