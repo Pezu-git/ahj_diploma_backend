@@ -114,6 +114,7 @@ app.use(async (ctx) => {
   const obj = {
     text,
     type,
+    link: `${url}/${link}`,
     id: uuidv4(),
     dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
   }
@@ -135,7 +136,6 @@ app.use(async (ctx) => {
       data.image.push(obj);
       obj.length = data.image.length;
       obj.array = 'image';
-      obj.link = `${url}/${link}`
       ctx.response.body = JSON.stringify(obj);
       break;
     case 'video':
