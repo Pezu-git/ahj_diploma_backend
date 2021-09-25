@@ -38,7 +38,6 @@ app.use(cors({
 const router = new Router();
 
 app.use(async (ctx) => {
-  console.log(ctx)
   if (ctx.request.files) {
     const { file } = ctx.request.files;
     if (file) {
