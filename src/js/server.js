@@ -9,7 +9,8 @@ const Router = require("koa-router");
 const cors = require('@koa/cors');
 
 const app = new Koa();
-const url = 'https://ahjdiploma.herokuapp.com';
+// const url = 'https://ahjdiploma.herokuapp.com';
+const url = 'https://localhost:7070/msg.json';
 
 const public = path.join(__dirname, '/public')
 app.use(koaStatic(public));
