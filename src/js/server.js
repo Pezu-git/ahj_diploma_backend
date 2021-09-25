@@ -84,7 +84,7 @@ app.use(async (ctx) => {
   const { text, type, array, media, init } = ctx.request.query;
 
   if (init) {
-    ctx.response.body = data;
+    ctx.response.body = data[media];
   }
 
   if (media) {
@@ -114,7 +114,6 @@ app.use(async (ctx) => {
   const obj = {
     text,
     type,
-    link: '`${url}/${link}`',
     id: uuidv4(),
     dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
   }
