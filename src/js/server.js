@@ -1,179 +1,140 @@
 const http = require('http');
 const path = require('path');
-const fs = require('fs');
 const Koa = require('koa');
+const Router = require('koa-router');
+const koaBody = require('koa-body');
 const koaStatic = require('koa-static');
-const koaBody = require('koa-body')
-const { v4: uuidv4 } = require('uuid');
-const Router = require("koa-router");
-const cors = require('@koa/cors');
+const fs = require('fs');
+const uuid = require('uuid');
+const WS = require('ws');
+
+const fetch = require('node-fetch');
 
 const app = new Koa();
-// const url = 'https://ahjdiploma.herokuapp.com';
-const url = 'https://localhost:7070/msg.json';
 
 const public = path.join(__dirname, '/public')
 app.use(koaStatic(public));
 
+// CORS
+app.use(async (ctx, next) => {
+  const origin = ctx.request.get('Origin');
+  if (!origin) {
+    return await next();
+  }
+
+  const headers = { 'Access-Control-Allow-Origin': '*', };
+
+  if (ctx.request.method !== 'OPTIONS') {
+    ctx.response.set({ ...headers });
+    try {
+      return await next();
+    } catch (e) {
+      e.headers = { ...e.headers, ...headers };
+      throw e;
+    }
+  }
+
+  if (ctx.request.get('Access-Control-Request-Method')) {
+    ctx.response.set({
+      ...headers,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',
+    });
+
+    if (ctx.request.get('Access-Control-Request-Headers')) {
+      ctx.response.set('Access-Control-Allow-Headers', ctx.request.get('Access-Control-Request-Headers'));
+    }
+
+    ctx.response.status = 204;
+  }
+});
+
+
 app.use(koaBody({
+  text: true,
   urlencoded: true,
   multipart: true,
   json: true,
 }));
 
-const data = {
-  message: [],
-  link: [],
-  image: [],
-  video: [],
-  audio: [],
-}
-
-app.use(cors({
-    origin: '*',
-    credentials: true,
-    'Access-Control-Allow-Origin': true,
-    allowMethods: ['GET', 'POST', 'PUT', 'DELETE'],
-  }));
-
 const router = new Router();
+const server = http.createServer(app.callback())
+const wsServer = new WS.Server({ server });
 
-app.use(async (ctx) => {
-  if (ctx.request.files) {
-    const { file } = ctx.request.files;
-    if (file) {
-      const type = file.type.split('/')[0];
-      const extension = file.type.split('/')[1];
-      const link = await new Promise((resolve, reject) => {
-      const oldPath = file.path;
-      const filename = `${uuidv4()}.${extension}`;
-      const newPath = path.join(public, filename);
-        
-      const callback = (error) => reject(error);
-        
-      const readStream = fs.createReadStream(oldPath);
-      const writeStream = fs.createWriteStream(newPath);
-        
-      readStream.on('error', callback);
-      writeStream.on('error', callback);
-        
-      readStream.on('close', () => {
-        console.log('close');
-        fs.unlink(oldPath, callback);
-        resolve(filename);
-      });
-        
-      readStream.pipe(writeStream);
-    });
+const arrMessges = [];
 
-    data[type].push({
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    });
-        
-    ctx.response.body = JSON.stringify({
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    });
-    return;
-    }
+let initMsg = false;
+
+router.get('/initmsg', async (ctx, next) => {
+  if (!initMsg) {
+    initMsg = true;
+    // const resp = await fetch('https://ahj-diploma-backend.herokuapp.com/msg.json');
+    const resp = await fetch('http://localhost:7070/msg.json');
+    const body = await resp.text();
+    const arrInitMsg = JSON.parse(body);
+    arrMessges.push(...arrInitMsg);
+    ctx.response.body = arrMessges[0];
   }
+  ctx.response.body = 'ok';
+});
 
-  const { text, type, array, media, init } = ctx.request.query;
+router.get('/allmsg', async (ctx, next) => {
+  console.log('get index');
+  ctx.response.body = arrMessges;
+});
 
-  if (init) {
-    ctx.response.body = data;
-  }
+router.get('/msg/:numb', async (ctx, next) => {
+  console.log('get numb', ctx.params.numb);
+  const endArr = arrMessges.length - ctx.params.numb;
+  const startArr = (endArr - 10) < 0 ? 0 : (endArr - 10);
+  const returnArr = arrMessges.slice(startArr, endArr).reverse();
+  ctx.response.body = returnArr;
+});
 
-  if (media) {
-    ctx.response.body = data[media];
-  }
-
-  switch (text) {
-    case 'getMessage':
-      ctx.response.body = JSON.stringify(data.message);
-      return;
-    case 'getLink':
-      ctx.response.body = JSON.stringify(data.link);
-      return;
-    case 'getImage':
-      ctx.response.body = JSON.stringify(data.image);
-      return;
-    case 'getVideo':
-      ctx.response.body = JSON.stringify(data.video);
-      return;
-    case 'getAudio':
-      ctx.response.body = JSON.stringify(data.audio);
-      return;
-    default:
-      break;
-  }
-  
+router.post('/favorits', async (ctx, next) => {
+  const msgOb = JSON.parse(ctx.request.body);
+  const itemIndex = arrMessges.findIndex((item) => JSON.parse(item).id === msgOb.id);
+  const parsedObj = JSON.parse(arrMessges[itemIndex]);
+  parsedObj.favorit = msgOb.value;
+  arrMessges[itemIndex] = JSON.stringify(parsedObj);
   const obj = {
-    text,
-    type,
-    id: uuidv4(),
-    dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-  }
-  
-  switch (type) {
-    case 'link':
-      data.link.push(obj);
-      obj.length = data.link.length;
-      obj.array = 'link';
-      ctx.response.body = JSON.stringify(obj);
-      break;
-    case 'message':
-      data.message.push(obj);
-      obj.length = data.message.length;
-      obj.array = 'message';
-      ctx.response.body = JSON.stringify(obj);
-      break;
-    case 'image':
-      data.image.push(obj);
-      obj.length = data.image.length;
-      obj.array = 'image';
-      ctx.response.body = JSON.stringify(obj);
-      break;
-    case 'video':
-      data.video.push(obj);
-      obj.length = data.video.length;
-      obj.array = 'video';
-      ctx.response.body = JSON.stringify(obj);
-      break;
-    case 'audio':
-      data.audio.push(obj);
-      obj.length = data.audio.length;
-      obj.array = 'audio';
-      ctx.response.body = JSON.stringify(obj);
-      break;
-  }
+    type: 'change-favorit',
+    id: msgOb.id,
+    value: msgOb.value,
+  };
+  ctx.response.status = 204
+});
 
-  switch (array) {
-    case 'link':
-      ctx.response.body = ['link', data.link.length];
-      break;
-    case 'message':
-      ctx.response.body = ['message', data.message.length];
-      break;
-    case 'image':
-      ctx.response.body = ['image', data.image.length];
-      break;
-    case 'video':
-      ctx.response.body = ['video', data.video.length];
-      break;
-    case 'audio':
-      ctx.response.body = ['audio', data.audio.length];
-      break;
-    default:
-      break;
-  }
+wsServer.on('connection', (ws, req) => {
+  console.log('connection');
+  ws.on('message', (msg) => {
+    arrMessges.push(msg);
+
+    [...wsServer.clients]
+    .filter(o => {
+      return o.readyState === WS.OPEN;
+    })
+    .forEach(o => o.send(msg));
+  });
+
+  ws.on('close', (msg) => {
+    console.log('close');
+    [...wsServer.clients]
+
+    .filter(o => {
+      return o.readyState === WS.OPEN;
+    })
+    .forEach(o => o.send(JSON.stringify({type: 'del user'})));
+    ws.close();
+  });
+
+  [...wsServer.clients]
+    .filter(o => {
+      return o.readyState === WS.OPEN;
+    })
+    .forEach(o => o.send(JSON.stringify({type: 'add user'})));
+
 });
 
 app.use(router.routes()).use(router.allowedMethods());
-
 const port = process.env.PORT || 7070;
-const server = http.createServer(app.callback())
-server.listen( port , '0.0.0.0');
+server.listen(port);
