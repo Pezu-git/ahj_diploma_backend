@@ -135,6 +135,7 @@ app.use(async (ctx) => {
       data.image.push(obj);
       obj.length = data.image.length;
       obj.array = 'image';
+      obj.link = `${url}/${link}`
       ctx.response.body = JSON.stringify(obj);
       break;
     case 'video':
