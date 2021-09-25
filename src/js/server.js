@@ -88,7 +88,12 @@ app.use(async (ctx) => {
   }
 
   if (media) {
-    ctx.response.body = data[media];
+    data.media.push({
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    });
+    ctx.response.body = data;
   }
 
   switch (text) {
