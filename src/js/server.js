@@ -23,10 +23,34 @@ app.use(koaBody({
 
 const data = {
   message: [],
-  link: [],
-  image: [],
-  video: [],
-  audio: [],
+  link: [
+    {
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    }
+  ],
+  image: [
+    {
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    }
+  ],
+  video: [
+    {
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    }
+  ],
+  audio: [
+    {
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    }
+  ],
 }
 
 app.use(cors({
