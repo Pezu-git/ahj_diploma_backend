@@ -45,7 +45,7 @@ app.use(async (ctx) => {
       const extension = file.type.split('/')[1];
       const link = await new Promise((resolve, reject) => {
       const oldPath = file.path;
-      const filename = `${uuid.v4()}.${extension}`;
+      const filename = `${uuidv4()}.${extension}`;
       const newPath = path.join(public, filename);
         
       const callback = (error) => reject(error);
