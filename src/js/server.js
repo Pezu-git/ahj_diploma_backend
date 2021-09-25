@@ -113,7 +113,6 @@ app.use(async (ctx) => {
   
   const obj = {
     text,
-    array,
     type,
     id: uuidv4(),
     dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
@@ -177,4 +176,4 @@ app.use(router.routes()).use(router.allowedMethods());
 
 const port = process.env.PORT || 7070;
 const server = http.createServer(app.callback())
-server.listen( port , '0.0.0.0');
+server.listen( port );
