@@ -83,12 +83,12 @@ app.use(async (ctx) => {
 
   const { text, type, array, media, init } = ctx.request.query;
 
-  // if (init) {
-  //   ctx.response.body = data;
-  // }
+  if (init) {
+    ctx.response.body = data;
+  }
 
   if (media) {
-    ctx.response.body = data[media];
+    ctx.response.body = data;
   }
 
   switch (text) {
