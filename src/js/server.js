@@ -10,7 +10,6 @@ const cors = require('@koa/cors');
 
 const app = new Koa();
 const url = 'https://ahjdiploma.herokuapp.com';
-// const url = 'https://ahjdiploma.herokuapp.com/msg.json';
 
 const public = path.join(__dirname, '/public')
 app.use(koaStatic(public));
@@ -39,6 +38,7 @@ app.use(cors({
 const router = new Router();
 
 app.use(async (ctx) => {
+  console.log(ctx)
   if (ctx.request.files) {
     const { file } = ctx.request.files;
     if (file) {
@@ -82,9 +82,10 @@ app.use(async (ctx) => {
   }
 
   const { text, type, array, media, init } = ctx.request.query;
+  
 
   if (init) {
-    ctx.response.body = data[media];
+    ctx.response.body = data;
   }
 
   if (media) {
@@ -174,6 +175,6 @@ app.use(async (ctx) => {
 
 app.use(router.routes()).use(router.allowedMethods());
 
-const port = process.env.PORT || 7070;
+const port = process.env.PORT || 7072;
 const server = http.createServer(app.callback())
-server.listen( port );
+server.listen( port, '0.0.0.0' );
