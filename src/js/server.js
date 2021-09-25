@@ -9,7 +9,7 @@ const Router = require("koa-router");
 const cors = require('@koa/cors');
 
 const app = new Koa();
-const url = 'https://ahjdiploma.herokuapp.com/';
+const url = 'https://ahjdiploma.herokuapp.com';
 
 const public = path.join(__dirname, '/public')
 app.use(koaStatic(public));
@@ -175,4 +175,4 @@ app.use(router.routes()).use(router.allowedMethods());
 
 const port = process.env.PORT || 7070;
 const server = http.createServer(app.callback())
-server.listen(port);
+server.listen( port , '0.0.0.0');
