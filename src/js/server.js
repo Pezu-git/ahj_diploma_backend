@@ -66,11 +66,11 @@ app.use(async (ctx) => {
       readStream.pipe(writeStream);
     });
 
-    data[type].push({
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    });
+    // data[type].push({
+    //   link: `${url}/${link}`,
+    //   type,
+    //   dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    // });
         
     ctx.response.body = JSON.stringify({
       link: `${url}/${link}`,
@@ -88,7 +88,7 @@ app.use(async (ctx) => {
   }
 
   if (media) {
-    ctx.response.body = data;
+    ctx.response.body = data[media];
   }
 
   switch (text) {
