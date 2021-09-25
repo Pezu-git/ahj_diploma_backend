@@ -23,34 +23,10 @@ app.use(koaBody({
 
 const data = {
   message: [],
-  link: [
-    {
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    }
-  ],
-  image: [
-    {
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    }
-  ],
-  video: [
-    {
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    }
-  ],
-  audio: [
-    {
-      link: `${url}/${link}`,
-      type,
-      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    }
-  ],
+  link: [],
+  image: [],
+  video: [],
+  audio: [],
 }
 
 app.use(cors({
@@ -90,11 +66,11 @@ app.use(async (ctx) => {
       readStream.pipe(writeStream);
     });
 
-    // data[type].push({
-    //   link: `${url}/${link}`,
-    //   type,
-    //   dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
-    // });
+    data[type].push({
+      link: `${url}/${link}`,
+      type,
+      dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
+    });
         
     ctx.response.body = JSON.stringify({
       link: `${url}/${link}`,
