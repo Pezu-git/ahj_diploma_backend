@@ -39,7 +39,7 @@ const router = new Router();
 
 app.use(async (ctx) => {
   if (ctx.request.files) {
-    const { file } = ctx.request.files;
+    const { file } = ctx.request.files.file;
     if (file) {
       const type = file.type.split('/')[0];
       const extension = file.type.split('/')[1];
