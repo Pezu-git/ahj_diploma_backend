@@ -113,6 +113,7 @@ app.use(async (ctx) => {
   
   const obj = {
     text,
+    array,
     type,
     id: uuidv4(),
     dateObj: `${ new Date().toLocaleDateString() } ${ new Date().toLocaleTimeString() }`,
